@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Perubahan Ekuitas Koperasi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #4a6491);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 26px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+        
+        .period-selector {
+            background-color: #f0f4f8;
+            padding: 20px 30px;
+            border-bottom: 1px solid #e1e5eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .period-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .period-group label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        select, input[type="month"] {
+            padding: 10px 15px;
+            border: 1px solid #d1d9e6;
+            border-radius: 6px;
+            font-size: 15px;
+            background-color: white;
+            color: #333;
+            min-width: 150px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: white;
+            margin-left: 10px;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+        
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 0;
+        }
+        
+        .sidebar {
+            flex: 1;
+            min-width: 300px;
+            background-color: #f8fafc;
+            padding: 25px;
+            border-right: 1px solid #e1e5eb;
+        }
+        
+        .main-content {
+            flex: 2;
+            min-width: 400px;
+            padding: 25px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #3498db;
+        }
+        
+        .card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card h3 i {
+            color: #3498db;
+        }
+        
+        .saldo-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px dashed #eaeaea;
+        }
+        
+        .saldo-item:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 16px;
+            padding-top: 15px;
+        }
+        
+        .saldo-label {
+            color: #555;
+        }
+        
+        .saldo-value {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        thead {
+            background-color: #2c3e50;
+            color: white;
+        }
+        
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        tbody tr {
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        tbody tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        td {
+            padding: 15px;
+        }
+        
+        .number-cell {
+            text-align: right;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+        }
+        
+        .positive {
+            color: #27ae60;
+        }
+        
+        .negative {
+            color: #e74c3c;
+        }
+        
+        .subtotal {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        
+        .total-row {
+            background-color: #2c3e50;
+            color: white;
+            font-size: 17px;
+        }
+        
+        .total-row td {
+            padding: 18px 15px;
+        }
+        
+        .footer {
+            padding: 20px 30px;
+            background-color: #f0f4f8;
+            border-top: 1px solid #e1e5eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .info-box {
+            background-color: #fff8e1;
+            border-left: 4px solid #f1c40f;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .info-box h4 {
+            color: #d35400;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                border-right: none;
+                border-bottom: 1px solid #e1e5eb;
+            }
+            
+            .period-selector {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+        
+        .print-btn {
+            background-color: #27ae60;
+            color: white;
+        }
+        
+        .print-btn:hover {
+            background-color: #219653;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-chart-line"></i> LAPORAN PERUBAHAN EKUITAS KOPERASI</h1>
+            <p>Koperasi "Sejahtera Bersama" - Sistem Pelaporan Keuangan Bulanan</p>
+        </div>
+        
+        <div class="period-selector">
+            <div class="period-group">
+                <label for="monthSelect">Pilih Bulan:</label>
+                <select id="monthSelect">
+                    <option value="1">Januari</option>
+                    <option value="2">Februari</option>
+                    <option value="3" selected>Maret</option>
+                    <option value="4">April</option>
+                    <option value="5">Mei</option>
+                    <option value="6">Juni</option>
+                    <option value="7">Juli</option>
+                    <option value="8">Agustus</option>
+                    <option value="9">September</option>
+                    <option value="10">Oktober</option>
+                    <option value="11">November</option>
+                    <option value="12">Desember</option>
+                </select>
+                
+                <select id="yearSelect">
+                    <option value="2023">2023</option>
+                    <option value="2024" selected>2024</option>
+                    <option value="2025">2025</option>
+                </select>
+            </div>
+            
+            <div>
+                <button class="btn btn-primary" id="loadDataBtn">
+                    <i class="fas fa-sync-alt"></i> Muat Data
+                </button>
+                <button class="btn btn-secondary" id="resetBtn">
+                    <i class="fas fa-redo"></i> Reset
+                </button>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="sidebar">
+                <div class="card">
+                    <h3><i class="fas fa-wallet"></i> SALDO AWAL PERIODE</h3>
+                    <div class="saldo-item">
+                        <span class="saldo-label">Modal Anggota</span>
+                        <span class="saldo-value" id="saldoModal">Rp 126.000.000</span>
+                    </div>
+                    <div class="saldo-item">
+                        <span class="saldo-label">Cadangan Koperasi</span>
+                        <span class="saldo-value" id="saldoCadangan">Rp 30.000.000</span>
+                    </div>
+                    <div class="saldo-item">
+                        <span class="saldo-label">SHU Tahun Lalu</span>
+                        <span class="saldo-value" id="saldoSHULalu">Rp 10.000.000</span>
+                    </div>
+                    <div class="saldo-item">
+                        <span class="saldo-label">SHU Berjalan (Akumulasi)</span>
+                        <span class="saldo-value positive" id="saldoSHUBerjalan">Rp 8.000.000</span>
+                    </div>
+                    <div class="saldo-item">
+                        <span class="saldo-label">Prive (Akumulasi)</span>
+                        <span class="saldo-value negative" id="saldoPrive">(Rp 2.000.000)</span>
+                    </div>
+                    <div class="saldo-item">
+                        <span class="saldo-label">TOTAL EKUITAS AWAL</span>
+                        <span class="saldo-value" id="totalAwal">Rp 172.000.000</span>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3><i class="fas fa-info-circle"></i> INFORMASI PERIODE</h3>
+                    <div class="saldo-item">
+                        <span class="saldo-label">Periode Laporan</span>
+                        <span class="saldo-value">Maret 2024</span>
+                    </div>
+                    <div class="saldo-item">
+                        <span class="saldo-label">Tanggal Penyusunan</span>
+                        <span class="saldo-value">15 Maret 2024</span>
+                    </div>
+                    <div class="saldo-item">
+                        <span class="saldo-label">Disusun Oleh</span>
+                        <span class="saldo-value">Budi (Bendahara)</span>
+                    </div>
+                    <div class="saldo-item">
+                        <span class="saldo-label">Status</span>
+                        <span class="saldo-value positive">✅ Lengkap</span>
+                    </div>
+                </div>
+                
+                <div class="info-box">
+                    <h4><i class="fas fa-lightbulb"></i> CATATAN PENTING</h4>
+                    <p>1. SHU Berjalan adalah akumulasi dari Januari hingga bulan laporan</p>
+                    <p>2. Alokasi SHU (Cadangan, Dividen) hanya dilakukan setahun sekali di RAT</p>
+                    <p>3. Prive adalah pengambilan sementara yang akan diperhitungkan saat RAT</p>
+                </div>
+            </div>
+            
+            <div class="main-content">
+                <div class="card">
+                    <h3><i class="fas fa-file-alt"></i> LAPORAN PERUBAHAN EKUITAS - MARET 2024</h3>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th width="40%">DESKRIPSI</th>
+                                <th width="15%">MODAL</th>
+                                <th width="15%">SHU BERJALAN</th>
+                                <th width="15%">PRIVE</th>
+                                <th width="15%">TOTAL</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="subtotal">
+                                <td><strong>Saldo Awal, 1 Maret 2024</strong></td>
+                                <td class="number-cell">126.000.000</td>
+                                <td class="number-cell positive">8.000.000</td>
+                                <td class="number-cell negative">(2.000.000)</td>
+                                <td class="number-cell"><strong>172.000.000</strong></td>
+                            </tr>
+                            
+                            <tr>
+                                <td colspan="5" style="background-color: #f1f8ff; padding: 10px 15px; font-weight: bold;">
+                                    <i class="fas fa-caret-right"></i> PERUBAHAN SELAMA MARET 2024
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>&nbsp;&nbsp;&nbsp;&nbsp;• Penambahan Modal (3 anggota baru)</td>
+                                <td class="number-cell positive">3.500.000</td>
+                                <td class="number-cell">-</td>
+                                <td class="number-cell">-</td>
+                                <td class="number-cell positive">3.500.000</td>
+                            </tr>
+                            
+                            <tr>
+                                <td>&nbsp;&nbsp;&nbsp;&nbsp;• SHU Bulan Maret (dari Laba Rugi)</td>
+                                <td class="number-cell">-</td>
+                                <td class="number-cell positive">5.200.000</td>
+                                <td class="number-cell">-</td>
+                                <td class="number-cell positive">5.200.000</td>
+                            </tr>
+                            
+                            <tr>
+                                <td>&nbsp;&nbsp;&nbsp;&nbsp;• Pengambilan Prive (Dinas Pengurus)</td>
+                                <td class="number-cell">-</td>
+                                <td class="number-cell">-</td>
+                                <td class="number-cell negative">(1.800.000)</td>
+                                <td class="number-cell negative">(1.800.000)</td>
+                            </tr>
+                            
+                            <tr class="subtotal">
+                                <td><strong>Total Perubahan Maret 2024</strong></td>
+                                <td class="number-cell positive"><strong>3.500.000</strong></td>
+                                <td class="number-cell positive"><strong>5.200.000</strong></td>
+                                <td class="number-cell negative"><strong>(1.800.000)</strong></td>
+                                <td class="number-cell"><strong>6.900.000</strong></td>
+                            </tr>
+                            
+                            <tr class="total-row">
+                                <td><strong>SALDO AKHIR, 31 MARET 2024</strong></td>
+                                <td class="number-cell"><strong>129.500.000</strong></td>
+                                <td class="number-cell"><strong>13.200.000</strong></td>
+                                <td class="number-cell"><strong>(3.800.000)</strong></td>
+                                <td class="number-cell"><strong>178.900.000</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="card">
+                    <h3><i class="fas fa-calculator"></i> RINGKASAN PERUBAHAN</h3>
+                    <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-top: 15px;">
+                        <div style="flex: 1; min-width: 200px;">
+                            <div style="background-color: #e8f5e9; padding: 15px; border-radius: 6px; text-align: center;">
+                                <div style="font-size: 14px; color: #555;">Modal Bertambah</div>
+                                <div style="font-size: 24px; font-weight: bold; color: #27ae60;">Rp 3.500.000</div>
+                                <div style="font-size: 13px; color: #777;">+2,78% dari bulan lalu</div>
+                            </div>
+                        </div>
+                        
+                        <div style="flex: 1; min-width: 200px;">
+                            <div style="background-color: #e3f2fd; padding: 15px; border-radius: 6px; text-align: center;">
+                                <div style="font-size: 14px; color: #555;">SHU Bulan Ini</div>
+                                <div style="font-size: 24px; font-weight: bold; color: #2980b9;">Rp 5.200.000</div>
+                                <div style="font-size: 13px; color: #777;">Akumulasi: Rp 13.200.000</div>
+                            </div>
+                        </div>
+                        
+                        <div style="flex: 1; min-width: 200px;">
+                            <div style="background-color: #ffebee; padding: 15px; border-radius: 6px; text-align: center;">
+                                <div style="font-size: 14px; color: #555;">Prive Bulan Ini</div>
+                                <div style="font-size: 24px; font-weight: bold; color: #e74c3c;">Rp 1.800.000</div>
+                                <div style="font-size: 13px; color: #777;">28,6% dari SHU bulan ini</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div>
+                <button class="btn print-btn" id="printBtn">
+                    <i class="fas fa-print"></i> Cetak Laporan
+                </button>
+                <button class="btn btn-secondary" id="exportBtn">
+                    <i class="fas fa-download"></i> Export Excel
+                </button>
+            </div>
+            
+            <div style="color: #666; font-size: 14px;">
+                <i class="fas fa-history"></i> Terakhir diperbarui: 15 Maret 2024, 14:30 WIB
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Data contoh untuk setiap bulan
+            const monthlyData = {
+                1: { // Januari
+                    modal: 120000000,
+                    cadangan: 30000000,
+                    shuLalu: 10000000,
+                    shuBerjalan: 8000000,
+                    prive: -2000000,
+                    total: 172000000,
+                    perubahan: {
+                        modal: 6000000,
+                        shu: 8000000,
+                        prive: -2000000,
+                        total: 12000000
+                    }
+                },
+                2: { // Februari
+                    modal: 126000000,
+                    cadangan: 30000000,
+                    shuLalu: 10000000,
+                    shuBerjalan: 10500000,
+                    prive: -2500000,
+                    total: 176500000,
+                    perubahan: {
+                        modal: 2500000,
+                        shu: 2500000,
+                        prive: -500000,
+                        total: 4500000
+                    }
+                },
+                3: { // Maret (data yang sedang ditampilkan)
+                    modal: 126000000,
+                    cadangan: 30000000,
+                    shuLalu: 10000000,
+                    shuBerjalan: 8000000,
+                    prive: -2000000,
+                    total: 172000000,
+                    perubahan: {
+                        modal: 3500000,
+                        shu: 5200000,
+                        prive: -1800000,
+                        total: 6900000
+                    }
+                }
+            };
+            
+            const monthNames = {
+                1: "Januari", 2: "Februari", 3: "Maret", 4: "April", 5: "Mei", 6: "Juni",
+                7: "Juli", 8: "Agustus", 9: "September", 10: "Oktober", 11: "November", 12: "Desember"
+            };
+            
+            // Format angka ke Rupiah
+            function formatRupiah(angka) {
+                if (angka >= 0) {
+                    return 'Rp ' + angka.toLocaleString('id-ID');
+                } else {
+                    return '(Rp ' + Math.abs(angka).toLocaleString('id-ID') + ')';
+                }
+            }
+            
+            // Update data berdasarkan bulan yang dipilih
+            function updateData() {
+                const month = parseInt(document.getElementById('monthSelect').value);
+                const year = document.getElementById('yearSelect').value;
+                const monthName = monthNames[month];
+                
+                // Update judul dan informasi periode
+                document.querySelector('.main-content .card h3').innerHTML = 
+                    `<i class="fas fa-file-alt"></i> LAPORAN PERUBAHAN EKUITAS - ${monthName.toUpperCase()} ${year}`;
+                
+                document.querySelector('.info-box p:nth-child(2)').textContent = 
+                    `1. SHU Berjalan adalah akumulasi dari Januari hingga ${monthName}`;
+                
+                // Jika ada data untuk bulan tersebut, gunakan data tersebut
+                if (monthlyData[month]) {
+                    const data = monthlyData[month];
+                    
+                    // Update saldo awal di sidebar
+                    document.getElementById('saldoModal').textContent = formatRupiah(data.modal);
+                    document.getElementById('saldoCadangan').textContent = formatRupiah(data.cadangan);
+                    document.getElementById('saldoSHULalu').textContent = formatRupiah(data.shuLalu);
+                    document.getElementById('saldoSHUBerjalan').textContent = formatRupiah(data.shuBerjalan);
+                    document.getElementById('saldoPrive').textContent = formatRupiah(data.prive);
+                    document.getElementById('totalAwal').textContent = formatRupiah(data.total);
+                    
+                    // Update tabel laporan
+                    const saldoAwalRow = document.querySelector('tbody tr.subtotal');
+                    saldoAwalRow.cells[0].innerHTML = `<strong>Saldo Awal, 1 ${monthName} ${year}</strong>`;
+                    saldoAwalRow.cells[1].textContent = formatRupiah(data.modal).replace('Rp ', '');
+                    saldoAwalRow.cells[2].textContent = formatRupiah(data.shuBerjalan).replace('Rp ', '');
+                    saldoAwalRow.cells[3].textContent = formatRupiah(data.prive).replace('(Rp ', '(').replace(')', ')');
+                    saldoAwalRow.cells[4].innerHTML = `<strong>${formatRupiah(data.total).replace('Rp ', '')}</strong>`;
+                    
+                    // Update total perubahan
+                    const totalPerubahanRow = document.querySelectorAll('tbody tr.subtotal')[1];
+                    totalPerubahanRow.cells[1].innerHTML = `<strong>${formatRupiah(data.perubahan.modal).replace('Rp ', '')}</strong>`;
+                    totalPerubahanRow.cells[2].innerHTML = `<strong>${formatRupiah(data.perubahan.shu).replace('Rp ', '')}</strong>`;
+                    totalPerubahanRow.cells[3].innerHTML = `<strong>${formatRupiah(data.perubahan.prive).replace('Rp ', '')}</strong>`;
+                    totalPerubahanRow.cells[4].innerHTML = `<strong>${formatRupiah(data.perubahan.total).replace('Rp ', '')}</strong>`;
+                    
+                    // Update saldo akhir
+                    const saldoAkhirModal = data.modal + data.perubahan.modal;
+                    const saldoAkhirSHU = data.shuBerjalan + data.perubahan.shu;
+                    const saldoAkhirPrive = data.prive + data.perubahan.prive;
+                    const saldoAkhirTotal = data.total + data.perubahan.total;
+                    
+                    const saldoAkhirRow = document.querySelector('tbody tr.total-row');
+                    saldoAkhirRow.cells[0].innerHTML = `<strong>SALDO AKHIR, 31 ${monthName.toUpperCase()} ${year}</strong>`;
+                    saldoAkhirRow.cells[1].innerHTML = `<strong>${formatRupiah(saldoAkhirModal).replace('Rp ', '')}</strong>`;
+                    saldoAkhirRow.cells[2].innerHTML = `<strong>${formatRupiah(saldoAkhirSHU).replace('Rp ', '')}</strong>`;
+                    saldoAkhirRow.cells[3].innerHTML = `<strong>${formatRupiah(saldoAkhirPrive).replace('Rp ', '')}</strong>`;
+                    saldoAkhirRow.cells[4].innerHTML = `<strong>${formatRupiah(saldoAkhirTotal).replace('Rp ', '')}</strong>`;
+                    
+                    // Update ringkasan perubahan
+                    document.querySelectorAll('.main-content .card')[1].querySelector('div:nth-child(2) > div:nth-child(1) div:nth-child(2)')
+                        .textContent = formatRupiah(data.perubahan.modal);
+                    
+                    const persenModal = ((data.perubahan.modal / data.modal) * 100).toFixed(2);
+                    document.querySelectorAll('.main-content .card')[1].querySelector('div:nth-child(2) > div:nth-child(1) div:nth-child(3)')
+                        .textContent = `+${persenModal}% dari bulan lalu`;
+                    
+                    document.querySelectorAll('.main-content .card')[1].querySelector('div:nth-child(2) > div:nth-child(2) div:nth-child(2)')
+                        .textContent = formatRupiah(data.perubahan.shu);
+                    
+                    document.querySelectorAll('.main-content .card')[1].querySelector('div:nth-child(2) > div:nth-child(2) div:nth-child(3)')
+                        .textContent = `Akumulasi: ${formatRupiah(data.shuBerjalan + data.perubahan.shu)}`;
+                    
+                    document.querySelectorAll('.main-content .card')[1].querySelector('div:nth-child(2) > div:nth-child(3) div:nth-child(2)')
+                        .textContent = formatRupiah(Math.abs(data.perubahan.prive));
+                    
+                    const persenPrive = ((Math.abs(data.perubahan.prive) / data.perubahan.shu) * 100).toFixed(1);
+                    document.querySelectorAll('.main-content .card')[1].querySelector('div:nth-child(2) > div:nth-child(3) div:nth-child(3)')
+                        .textContent = `${persenPrive}% dari SHU bulan ini`;
+                }
+                
+                // Update informasi periode di sidebar
+                document.querySelectorAll('.sidebar .card')[1].querySelectorAll('.saldo-item')[0].querySelector('.saldo-value')
+                    .textContent = `${monthName} ${year}`;
+                
+                document.querySelectorAll('.sidebar .card')[1].querySelectorAll('.saldo-item')[3].querySelector('.saldo-value')
+                    .textContent = `✅ ${month === 3 ? 'Lengkap' : 'Draft'}`;
+                
+                // Update footer
+                document.querySelector('.footer div:nth-child(2)').innerHTML = 
+                    `<i class="fas fa-history"></i> Terakhir diperbarui: 15 ${monthName} ${year}, 14:30 WIB`;
+            }
+            
+            // Event listeners
+            document.getElementById('loadDataBtn').addEventListener('click', updateData);
+            
+            document.getElementById('resetBtn').addEventListener('click', function() {
+                document.getElementById('monthSelect').value = '3';
+                document.getElementById('yearSelect').value = '2024';
+                updateData();
+            });
+            
+            document.getElementById('printBtn').addEventListener('click', function() {
+                alert('Fitur cetak akan membuka preview printer. Dalam implementasi nyata, ini akan mencetak laporan.');
+                // window.print(); // Uncomment untuk benar-benar print
+            });
+            
+            document.getElementById('exportBtn').addEventListener('click', function() {
+                alert('Laporan berhasil diexport ke Excel!');
+                // Dalam implementasi nyata, ini akan mengenerate file Excel
+            });
+            
+            document.getElementById('monthSelect').addEventListener('change', updateData);
+            document.getElementById('yearSelect').addEventListener('change', updateData);
+            
+            // Inisialisasi data
+            updateData();
+        });
+    </script>
+</body>
+</html>
